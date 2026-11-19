@@ -1,22 +1,18 @@
-# Telescope and WFS
-# -----------------
+###############################################################################################################
+################################            GENERAL SYSTEM PARAMETERS          ################################
+###############################################################################################################
+
+# Telescope - ELT
+# ---------------
 diameter = 40.                              # telescope diameter in meters
-n_subapertures = 100                        # number of subapertures across the pupil
-npix = 2*n_subapertures                     # number of pixels across the pupil
+npix = 400                                  # number of pixels across the pupil
 obscuration_ratio = 0.3                     # central obscuration ratio
 fsamp = 1000.                               # sampling frequency in Hz
 fov = 0.                                    # field of view in arcseconds
 # flux_ref = 2.7e9                          # photon flux at mag 0 (photons/frame/aperture)
 spider_arms = True                          # enable spiders in the pupil
 zeroPaddingFactor = 4                       # zero padding factor for FFT-based propagation
-npix_PSF = zeroPaddingFactor*npix           # number of pixels across the PSF
-valid_ratio = 0.5                           # flux threshold to select valid sub-subaperture
-mod_rad = 3                                 # pyramid modulation in lambda/D
-py_binning = 1                              # binning factor (applied only on the )
-n_pix_separation = 2                        # number of pixel separating the different pupils
-n_pix_edge = 1                              # number of pixel on the edges of the pupils
-normalization = 'fullFrame_incidence_flux'  # slopesMap_incidence_flux, fullFrame_incidence_flux (see documentation)
-n_photons_per_subap = 1000                  # number of photons per subaperture per frame
+npix_PSF = zeroPaddingFactor*npix           # number of pixels across the PSF (only for visualization windows)
 
 if spider_arms:
     thickness_spider    = 0.2                                        # thickness of the spiders in m
@@ -28,11 +24,11 @@ if spider_arms:
 # Sources 
 # -------
 optBand_src = "I"                   # Optical band of the source
-magnitude_src = 8                   # Source Magnitude of the source
+magnitude_src = 5                   # Source Magnitude of the source
 coordinates_src = [0,0]             # Source coordinates [arcsec,deg]
 
 optBand_ngs = "K"                   # Optical band of the ngs
-magnitude_ngs = 8                   # Source Magnitude of the ngs
+magnitude_ngs = 5                   # Source Magnitude of the ngs
 coordinates_ngs = [0,0]             # Source coordinates [arcsec,deg]
 
 
@@ -41,29 +37,49 @@ coordinates_ngs = [0,0]             # Source coordinates [arcsec,deg]
 r0_500nm = 0.15                      # Fried parameter at 500 nm in meters
 list_alt = [0., 4000., 10000.]       # altitudes of the turbulent layers in meters
 list_Cn2 = [0.5, 0.35, 0.15]         # relative strengths of the turbulent layers
-list_wind_speed = [10., 26., 35.]    # wind speeds of the turbulent layers in m/s
+list_wind_speed = [10., 10., 10.]    # wind speeds of the turbulent layers in m/s
 list_wind_dir = [0., 45., 180.]      # wind directions of the turbulent layers in degrees
 list_L0 = 25.                        # outer scales of the turbulent layers in meters
 
+###############################################################################################################
+##################################                FIRST STAGE                ##################################
+###############################################################################################################
 
-# Deformable mirror
-# -----------------
-DM_coupling = 0.35                                  # DM coupling coefficient
+# Wavefront Sensor 1
+# ------------------
+n_subapertures = 100                        # number of subapertures across the pupil
+valid_ratio = 0.5                           # flux threshold to select valid sub-subapertures
+mod_rad = 3                                 # pyramid modulation in lambda/D
+py_binning = 1                              # binning factor 
+n_pix_separation = 2                        # number of pixel separating the different pupils
+n_pix_edge = 1                              # number of pixel on the edges of the pupils
+normalization = 'fullFrame_incidence_flux'  # slopesMap_incidence_flux, fullFrame_incidence_flux (see documentation)
+n_photons_per_subap = 1000                  # number of photons per subaperture per frame
+
+
+# M4 - Deformable mirror 1
+# ------------------------
+# DM_coupling = 0.35                                  # DM coupling coefficient (not used if IF are provided)
 misReg = MisRegistration()                          # mis-registrations object (rotation, shifts..)
 misReg.shiftX = 0                                   # in [m]
 misReg.shiftY = 0                                   # in [m]
 misReg.rotationAngle = 0                            # in [deg]
-nAct = n_subapertures+1                             # specifying a given number of actuators along the diameter
 stroke = 1e-9                                       # amplitude of the modes in m
 name_system = 'ELT_M4'                              # DM name
 loc = 'C:/Users/timot/Documents/python_files/'      # path to the DM influence functions file
-n_modes_rec = 3500                                  # nb of KL modes used for the reconstruction
+n_modes_rec = 4100                                  # nb of KL modes used for the reconstruction
+# pitch = diameter*(1-obscuration_ratio)/25           # pitch of the M4 inside the aperture 
+lim_inversion = 1e-3                                # inversion stability criterion
 
 
-# Loop parameters
-# ---------------
-nLoop = 300                         # number of iterations
-gainCL = 0.3                        # integrator gain
+
+
+###############################################################################################################
+##################################           CLOSED-LOOP PARAMETERS          ##################################
+###############################################################################################################
+
+nLoop = 100                         # number of iterations
+gainCL = 0.5                        # integrator gain
 wfscamphotonNoise = False           # enable photon noise on the WFS camera
 display = False                     # enable the display
 frame_delay = 2                     # number of frame delay
