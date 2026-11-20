@@ -1,2 +1,2 @@
 # PCS
-Repository for PCS related works and code
+Repository for PCS related works and codes
